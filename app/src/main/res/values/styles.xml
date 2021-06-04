@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="RatingBar"  parent="android:style/Widget.Material.RatingBar.Small">
+        <item name="colorControlActivated">@android:color/holo_blue_light</item>
+        <item name="colorControlNormal">@android:color/darker_gray</item>
+    </style>
+</resources>

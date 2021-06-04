@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Books</string>
+    <string name="author_format_res">author: %s</string>
+    <string name="genre_format_res">genre: %s</string>
+    <string name="date_format_res">date: %s</string>
+    <string name="pages_format_res">pages: %s</string>
+    <string name="search_result_format_res">%s:</string>
+</resources>
