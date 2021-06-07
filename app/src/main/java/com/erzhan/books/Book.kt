@@ -1,50 +1,38 @@
 package com.erzhan.books
 
-class Book constructor(title: String, author: String, genre: String, date: String, imageSource: String, numberOfPages: Int?, rating: Double, infoLink: String) {
+//import com.google.gson.annotations.Expose
+//import com.google.gson.annotations.SerializedName
+//
+//class Book {
+//    @SerializedName("items")
+//    @Expose
+//    var items: List<Item>? = null
+//}
 
-    var title = ""
-        get() {
-            return field
-        }
-    var author = ""
-        get() {
-            return field
-        }
-    var genre = ""
-        get() {
-            return field
-        }
 
-    var date = ""
-        get() {
-            return field
-        }
-    var imageSource = ""
-        get() {
-            return field
-        }
-    var numberOfPages: Int? = null
-        get() {
-            return field
-        }
-    var rating = -1.0
-        get() {
-            return field
-        }
+// Questions -> Можно ли просто как внизу использовать дата классы в одном файле ?
+// Или как сверху использовать разные классы для разных данных из json ?
 
-    var infoLink = ""
-        get() {
-            return field
-        }
+data class Book(
+    val items: ArrayList<VolumeInfos>
+)
 
-    init {
-        this.title = title;
-        this.author = author;
-        this.genre = genre;
-        this.date = date
-        this.imageSource = imageSource;
-        this.numberOfPages = numberOfPages;
-        this.rating = rating;
-        this.infoLink = infoLink;
-    }
-}
+data class VolumeInfos(
+    val volumeInfo: BookInfo
+)
+
+data class BookInfo(
+    val title: String,
+    val authors: ArrayList<String>,
+    val genre: String,
+    val publishedDate: String,
+    val pageCount: Int,
+    val categories: ArrayList<String>,
+    val averageRating: Double,
+    val imageLinks: ImageLink,
+    val infoLink: String
+)
+
+data class ImageLink(
+    val thumbnail: String
+)

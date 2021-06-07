@@ -1,6 +1,7 @@
 package com.erzhan.books
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import kotlin.collections.ArrayList
 class BookRecyclerViewAdapter constructor(books: ArrayList<Book>) : RecyclerView.Adapter<BookRecyclerViewAdapter.MyViewHolder>() {
 
     var books: ArrayList<Book>
+
     lateinit var context: Context;
 
     init {
@@ -41,6 +43,7 @@ class BookRecyclerViewAdapter constructor(books: ArrayList<Book>) : RecyclerView
             bookPagesTextView = itemView.findViewById(R.id.bookPagesTextViewId)
             bookRatingBar = itemView.findViewById(R.id.bookRatingBarId)
         }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -55,21 +58,34 @@ class BookRecyclerViewAdapter constructor(books: ArrayList<Book>) : RecyclerView
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bookTitleTextView.text = books[position].title
-        holder.bookAuthorTextView.text = String.format(Locale.getDefault(), context.getString(R.string.author_format_res), books[position].author)
-        holder.bookGenreTextView.text = String.format(Locale.getDefault(), context.getString(R.string.genre_format_res), books[position].genre)
-        holder.bookDateTextView.text = String.format(Locale.getDefault(), context.getString(R.string.date_format_res),books[position].date)
-        holder.bookPagesTextView.text = String.format(Locale.getDefault(), context.getString(R.string.pages_format_res),books[position].numberOfPages.toString())
-        holder.bookRatingBar.rating = books[position].rating.toFloat()
+        holder.bookTitleTextView.text = books[position].items.get(position).volumeInfo.title
+        holder.bookAuthorTextView.text = String.format(Locale.getDefault(), context.getString(R.string.author_format_res),
+            books[position].items[position].volumeInfo.authors[0]
+        )
+        holder.bookGenreTextView.text = String.format(Locale.getDefault(), context.getString(R.string.genre_format_res), books[position].items[position].volumeInfo.categories)
+        holder.bookDateTextView.text = String.format(Locale.getDefault(), context.getString(R.string.date_format_res), books[position].items[position].volumeInfo.publishedDate)
+        holder.bookPagesTextView.text = String.format(Locale.getDefault(), context.getString(R.string.pages_format_res), books[position].items[position].volumeInfo.pageCount)
+        holder.bookRatingBar.rating = books[position].items[position].volumeInfo.averageRating.toFloat()
 
-        val imageResourceUrl = books[position].imageSource
+        val imageResourceUrl = books[position].items[position].volumeInfo.imageLinks.thumbnail
         val placeholder = R.drawable.book_placeholder
+
+//        Log.v("recycler", books[position].items[position].volumeInfo.imageLinks.thumbnail.toString()) ->
+//
+//        -> "http://books.google.com/books/content?id=VNIiAQAAMAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+//
+//         Glide
+//            .with(context)
+//            .load("http://books.google.com/books/content?id=VNIiAQAAMAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api")
+//            .placeholder(placeholder)
+//            .into(holder.bookImageView) -> it works fine
 
         Glide
             .with(context)
             .load(imageResourceUrl)
             .placeholder(placeholder)
             .into(holder.bookImageView)
+//        gives an error -> Load failed for http://books.google.com/books/content?id=VNIiAQAAMAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api with size [382x495]
     }
 
     override fun getItemCount(): Int {
