@@ -1,7 +1,6 @@
 package com.erzhan.books
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,14 +9,13 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
-import java.text.Format
 import java.util.*
 import kotlin.collections.ArrayList
 
-class BookRecyclerViewAdapter constructor(books: ArrayList<Book>) : RecyclerView.Adapter<BookRecyclerViewAdapter.MyViewHolder>() {
+class BookRecyclerViewAdapter(books: ArrayList<VolumeInfo>) :
+    RecyclerView.Adapter<BookRecyclerViewAdapter.MyViewHolder>() {
 
-    var books: ArrayList<Book>
+    var books: ArrayList<VolumeInfo>
 
     lateinit var context: Context;
 
@@ -58,34 +56,74 @@ class BookRecyclerViewAdapter constructor(books: ArrayList<Book>) : RecyclerView
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bookTitleTextView.text = books[position].items.get(position).volumeInfo.title
-        holder.bookAuthorTextView.text = String.format(Locale.getDefault(), context.getString(R.string.author_format_res),
-            books[position].items[position].volumeInfo.authors[0]
-        )
-        holder.bookGenreTextView.text = String.format(Locale.getDefault(), context.getString(R.string.genre_format_res), books[position].items[position].volumeInfo.categories)
-        holder.bookDateTextView.text = String.format(Locale.getDefault(), context.getString(R.string.date_format_res), books[position].items[position].volumeInfo.publishedDate)
-        holder.bookPagesTextView.text = String.format(Locale.getDefault(), context.getString(R.string.pages_format_res), books[position].items[position].volumeInfo.pageCount)
-        holder.bookRatingBar.rating = books[position].items[position].volumeInfo.averageRating.toFloat()
+        holder.bookTitleTextView.text = books[position].volumeInfo.title
+        if (books[position].volumeInfo.authors != null) {
+            holder.bookAuthorTextView.text = String.format(
+                Locale.getDefault(), context.getString(R.string.author_format_res),
+                books[position].volumeInfo.authors?.get(0)
+            )
+        } else {
+            holder.bookAuthorTextView.text = String.format(
+                Locale.getDefault(), context.getString(R.string.author_format_res),
+                context.getString(R.string.not_available_res)
+            )
+        }
+        if (books[position].volumeInfo.categories != null) {
+            holder.bookGenreTextView.text = books[position].volumeInfo.categories?.get(0)?.let {
+                String.format(
+                    Locale.getDefault(), context.getString(R.string.genre_format_res),
+                    it
+                )
+            }
+        } else {
+            holder.bookGenreTextView.text = String.format(
+                Locale.getDefault(),
+                context.getString(R.string.genre_format_res),
+                context.getString(R.string.not_available_res)
+            )
+        }
+        if (books[position].volumeInfo.publishedDate != null) {
+            holder.bookDateTextView.text = String.format(
+                Locale.getDefault(),
+                context.getString(R.string.date_format_res),
+                books[position].volumeInfo.publishedDate
+            )
+        } else {
+            holder.bookDateTextView.text = String.format(
+                Locale.getDefault(),
+                context.getString(R.string.date_format_res),
+                context.getString(R.string.not_available_res)
+            )
+        }
+        if (books[position].volumeInfo.pageCount != null) {
+            holder.bookPagesTextView.text = String.format(
+                Locale.getDefault(),
+                context.getString(R.string.pages_format_res),
+                books[position].volumeInfo.pageCount.toString()
+            )
 
-        val imageResourceUrl = books[position].items[position].volumeInfo.imageLinks.thumbnail
+        } else {
+            holder.bookPagesTextView.text = String.format(
+                Locale.getDefault(),
+                context.getString(R.string.pages_format_res),
+                context.getString(R.string.not_available_res)
+            )
+        }
+
+        holder.bookRatingBar.rating = books[position].volumeInfo.averageRating?.toFloat() ?: 0.0f
+
+        lateinit var imageResourceUrl: String;
+
+        if (books[position].volumeInfo.imageLinks.thumbnail != null) {
+            imageResourceUrl = books[position].volumeInfo.imageLinks.thumbnail.toString()
+        }
         val placeholder = R.drawable.book_placeholder
-
-//        Log.v("recycler", books[position].items[position].volumeInfo.imageLinks.thumbnail.toString()) ->
-//
-//        -> "http://books.google.com/books/content?id=VNIiAQAAMAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-//
-//         Glide
-//            .with(context)
-//            .load("http://books.google.com/books/content?id=VNIiAQAAMAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api")
-//            .placeholder(placeholder)
-//            .into(holder.bookImageView) -> it works fine
 
         Glide
             .with(context)
             .load(imageResourceUrl)
             .placeholder(placeholder)
             .into(holder.bookImageView)
-//        gives an error -> Load failed for http://books.google.com/books/content?id=VNIiAQAAMAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api with size [382x495]
     }
 
     override fun getItemCount(): Int {
