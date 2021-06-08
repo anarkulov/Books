@@ -1,6 +1,8 @@
 package com.erzhan.books
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,21 +11,26 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import java.util.*
 import kotlin.collections.ArrayList
 
-class BookRecyclerViewAdapter(books: ArrayList<VolumeInfo>) :
+class BookRecyclerViewAdapter(books: ArrayList<VolumeInfo>, listener: OnItemClickListener) :
     RecyclerView.Adapter<BookRecyclerViewAdapter.MyViewHolder>() {
 
     var books: ArrayList<VolumeInfo>
+    val listener: OnItemClickListener
 
     lateinit var context: Context;
 
     init {
         this.books = books
+        this.listener = listener
     }
 
-    class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         val bookTitleTextView: TextView
         val bookAuthorTextView: TextView
         val bookGenreTextView: TextView
@@ -31,6 +38,7 @@ class BookRecyclerViewAdapter(books: ArrayList<VolumeInfo>) :
         val bookImageView: ImageView
         val bookPagesTextView: TextView
         val bookRatingBar: RatingBar
+        var infoLink: String
 
         init {
             bookTitleTextView = itemView.findViewById(R.id.bookTitleTextViewId)
@@ -40,8 +48,21 @@ class BookRecyclerViewAdapter(books: ArrayList<VolumeInfo>) :
             bookImageView = itemView.findViewById(R.id.bookImageViewId)
             bookPagesTextView = itemView.findViewById(R.id.bookPagesTextViewId)
             bookRatingBar = itemView.findViewById(R.id.bookRatingBarId)
+            infoLink = ""
+            itemView.setOnClickListener(this)
         }
 
+        override fun onClick(v: View?) {
+            val position: Int = adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                listener.onItemClick(position, infoLink)
+            }
+        }
+
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(position: Int, data: String)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -111,6 +132,8 @@ class BookRecyclerViewAdapter(books: ArrayList<VolumeInfo>) :
         }
 
         holder.bookRatingBar.rating = books[position].volumeInfo.averageRating?.toFloat() ?: 0.0f
+        holder.infoLink = books[position].volumeInfo.infoLink
+
 
         lateinit var imageResourceUrl: String;
 
@@ -123,8 +146,11 @@ class BookRecyclerViewAdapter(books: ArrayList<VolumeInfo>) :
             .with(context)
             .load(imageResourceUrl)
             .placeholder(placeholder)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .fitCenter()
             .into(holder.bookImageView)
     }
+
 
     override fun getItemCount(): Int {
         return books.size

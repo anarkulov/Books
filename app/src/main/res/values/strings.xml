@@ -7,4 +7,5 @@
     <string name="search_result_format_res">Results for %s:</string>
     <string name="no_result_res">No %s found</string>
     <string name="not_available_res">N/A</string>
+    <string name="search_book_name">Search</string>
 </resources>

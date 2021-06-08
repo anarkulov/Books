@@ -1,5 +1,7 @@
 package com.erzhan.books
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
@@ -18,7 +20,7 @@ import java.security.acl.Group
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ResultActivity : AppCompatActivity() {
+class ResultActivity : AppCompatActivity(), BookRecyclerViewAdapter.OnItemClickListener {
 
     lateinit var bookAdapter: BookRecyclerViewAdapter
     lateinit var bookList: ArrayList<VolumeInfo>
@@ -36,7 +38,7 @@ class ResultActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
 
-        bookAdapter = BookRecyclerViewAdapter(ArrayList())
+        bookAdapter = BookRecyclerViewAdapter(ArrayList(), this)
         bookList = ArrayList()
 
         recyclerView = findViewById(R.id.recyclerViewId)
@@ -104,5 +106,11 @@ class ResultActivity : AppCompatActivity() {
             }
             noResultTextView.visibility = View.GONE
         }
+    }
+
+    override fun onItemClick(position: Int, data: String) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse(data)
+        startActivity(intent)
     }
 }
