@@ -42,7 +42,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/no_result_res" />
+        android:textColor="@color/white"
+        android:textSize="28sp"
+        android:text="@string/no_result_res" />
 
     <ProgressBar
         android:id="@+id/loadingProgressBarId"

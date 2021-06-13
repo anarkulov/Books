@@ -3,6 +3,7 @@ package com.erzhan.books
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -72,14 +73,19 @@ class ResultActivity : AppCompatActivity(), BookRecyclerViewAdapter.OnItemClickL
                 response: Response<Book>
             ) {
                 if (response.isSuccessful) {
-                    val bodyResponse = response.body()
-                    if (bodyResponse != null) {
-                        bookList.addAll(bodyResponse.items)
-                        bookAdapter.books = bookList
-                        recyclerView.adapter = bookAdapter
-                        recyclerView.layoutManager = LinearLayoutManager(baseContext)
+                    try {
+                        val bodyResponse = response.body()
+                        if (bodyResponse != null) {
+                            bookList.addAll(bodyResponse.items)
+                            bookAdapter.books = bookList
+                            recyclerView.adapter = bookAdapter
+                            recyclerView.layoutManager = LinearLayoutManager(baseContext)
+                            setVisibility(true)
+
+                        }
+                    } catch (npe: NullPointerException){
+                        setVisibility(true)
                     }
-                    setVisibility(true)
 
                 } else {
                     Toast.makeText(baseContext, "Error: ${response.code()}", Toast.LENGTH_LONG).show()
@@ -98,6 +104,7 @@ class ResultActivity : AppCompatActivity(), BookRecyclerViewAdapter.OnItemClickL
             noResultTextView.visibility = View.VISIBLE
             resultTextView.visibility = View.GONE
             recyclerView.visibility = View.GONE
+            loadingProgressBar.visibility = View.GONE
         } else {
             if (status) {
                 loadingProgressBar.visibility = View.GONE
